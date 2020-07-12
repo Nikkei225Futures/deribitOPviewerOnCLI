@@ -108,8 +108,10 @@ public class DeribitApi {
             this.sleep(200);
             opBoard[i] = getSpecificTickerOpBoard(availableTickers[j]);
             j++;
+
             String splitedTickerName[] = availableTickers[j].split("-", 0);
             String strike = splitedTickerName[2];
+            
             opBoard[i] += "\t" + strike + "\t\t";
             this.sleep(200);
             opBoard[i] += getSpecificTickerOpBoard(availableTickers[j]);
@@ -200,6 +202,7 @@ public class DeribitApi {
         String endPoint = "/public/ticker?instrument_name=" + tickerName;
         JSONObject wholeData = getAPIResult(endPoint);
         JSONObject result = wholeData.getJSONObject("result");
+        System.out.println("loading " + tickerName);
 
         float currentIndexPrice = result.getFloat("index_price");
         float bidIv   = result.getFloat("bid_iv");
@@ -241,9 +244,15 @@ public class DeribitApi {
         if(splitedTickerName[3].equals("C")){
             tickerStatus[0] = String.valueOf(currentOpStat);
             tickerStatus[7] = String.valueOf(openInterest);
+            if(tickerStatus[7].equals("0.0")){
+                tickerStatus[7] = "---";
+            }
         }else if(splitedTickerName[3].equals("P")){
             tickerStatus[0] = String.valueOf(openInterest);
             tickerStatus[7] = String.valueOf(currentOpStat);
+            if(tickerStatus[0].equals("0.0")){
+                tickerStatus[0] = "---";
+            }
         }
         tickerStatus[1] = String.valueOf(bidIv) + "%";
         tickerStatus[2] = String.valueOf(bidSize);
@@ -251,6 +260,12 @@ public class DeribitApi {
         tickerStatus[4] = String.valueOf(ask);
         tickerStatus[5] = String.valueOf(askSize);
         tickerStatus[6] = String.valueOf(askIv) + "%";
+
+        for(int i = 1; i <= 6; i++){
+            if(tickerStatus[i].equals("0.0") || tickerStatus[i].equals("0.0%")){
+                tickerStatus[i] = "---";
+            }
+        }
 
         String tickerString = "";
         for(int i = 0; i < tickerStatus.length; i++){
@@ -260,6 +275,14 @@ public class DeribitApi {
 
         return tickerString;
     }
+
+    /* not used */ 
+    private String changeStringColor(String target, String color){
+        String end = "\u001b[00m";
+        String ret = color + target + end;
+        return ret;
+    }
+    /*not used*/
 
     private float roundDownFloat(float target, int underP){
         BigDecimal bd = new BigDecimal(String.valueOf(target));

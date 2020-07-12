@@ -39,15 +39,15 @@ public class CommandExecuter{
             }
 
         }else if(input.equals("getTickers")){
-            String selectedCM = this.inputCommand("Contract Month");
-            String[] tickers = api.getAvailableTickersByContractMonth(selectedCM);
+            String selectedCM = this.inputCommand("Contract Month", api.getCurrentAsset() + "-");
+            String[] tickers = api.getAvailableTickersByContractMonth(api.getCurrentAsset() + "-" + selectedCM);
             for(int i = 0; i < tickers.length; i+=2){
                 System.out.println(tickers[i] + "\t" + tickers[i+1]);
             }
 
         }else if(input.equals("getBoard")){
-            String selectedContractMonth = inputCommand("Contract Month");
-            String[] boardLines = api.getOpBoard(selectedContractMonth);
+            String selectedContractMonth = inputCommand("Contract Month", api.getCurrentAsset() + "-");
+            String[] boardLines = api.getOpBoard(api.getCurrentAsset() + "-" + selectedContractMonth);
 
             this.showDividingLine();
             System.out.println("\t\t\t\t\tCALL\t\t\t\t\t\t\t\tPUT\t\t\t\t\t");
@@ -76,6 +76,12 @@ public class CommandExecuter{
 
     private String inputCommand(String str){
         System.out.print(str + "> ");
+        Scanner scan = new Scanner(System.in);
+        return scan.next();
+    }
+
+    private String inputCommand(String str, String indic){
+        System.out.print(str + "> " + indic);
         Scanner scan = new Scanner(System.in);
         return scan.next();
     }
