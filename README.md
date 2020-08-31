@@ -4,7 +4,7 @@ This program using Json in java
 
 notice: getBoard function is very slow, because of the api limitation.
 
-sometimes it takes 10second or more.
+sometimes it takes 40 seconds or more.
 
 -------------------------license of JSON-------------------------------
 
