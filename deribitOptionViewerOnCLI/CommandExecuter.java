@@ -58,7 +58,7 @@ public class CommandExecuter{
             this.showDividingLine();
             for(int i = 0; i < boardLines.length; i++){
                 System.out.println(boardLines[i]);
-                this.showDividingLine();
+                //this.showDividingLine();
             }
         }
 

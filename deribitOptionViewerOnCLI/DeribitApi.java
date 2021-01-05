@@ -113,7 +113,7 @@ public class DeribitApi {
             String strike = splitedTickerName[2];
             
             opBoard[i] += "\t" + strike + "\t\t";
-            this.sleep(200);
+            this.sleep(60);
             opBoard[i] += getSpecificTickerOpBoard(availableTickers[j]);
             j++;
         }
