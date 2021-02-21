@@ -5,9 +5,10 @@ import java.math.*;
 public class DeribitApi {
     private final String liveEntryPoint = "https://www.deribit.com/api/v2";
     private final String testEntryPoint = "https://test.deribit.com/api/v2";
-    private String entryPoint = this.testEntryPoint;
+    private String entryPoint = this.liveEntryPoint;
     private ExeCommand cmd = new ExeCommand();
     private String asset = "BTC";
+    private float currentIndex = 0;
     
     //setter asset
     public void setAsset(String assetName){
@@ -50,6 +51,7 @@ public class DeribitApi {
 
         JSONObject result = wholeData.getJSONObject("result");
         float indexPrice = result.getFloat(asset);
+        this.currentIndex = indexPrice;
         return indexPrice;
     }
     
@@ -104,8 +106,11 @@ public class DeribitApi {
         String[] availableTickers = getAvailableTickersByContractMonth(contractMonth);
         String[] opBoard = new String[availableTickers.length/2];
         int j = 0;
+        this.currentIndex = this.getIndexPrice();
+        this.sleep(55);
+
         for(int i = 0; i < opBoard.length; i++){
-            this.sleep(200);
+            this.sleep(55);
             opBoard[i] = getSpecificTickerOpBoard(availableTickers[j]);
             j++;
 
@@ -113,7 +118,7 @@ public class DeribitApi {
             String strike = splitedTickerName[2];
             
             opBoard[i] += "\t" + strike + "\t\t";
-            this.sleep(60);
+            this.sleep(55);
             opBoard[i] += getSpecificTickerOpBoard(availableTickers[j]);
             j++;
         }
@@ -205,19 +210,31 @@ public class DeribitApi {
         System.out.println("loading " + tickerName);
 
         float currentIndexPrice = result.getFloat("index_price");
-        float bidIv   = result.getFloat("bid_iv");
-        float askIv   = result.getFloat("ask_iv");
+        float markIv  = result.getFloat("mark_iv");
         float bidSize = result.getFloat("best_bid_amount");
         float askSize = result.getFloat("best_ask_amount");
         float bid = result.getFloat("best_bid_price");
         float ask = result.getFloat("best_ask_price");
         float openInterest = result.getFloat("open_interest");
 
-        bid   = this.roundDownFloat(bid, 4);
-        ask   = this.roundDownFloat(ask, 4);
-        bidIv = this.roundDownFloat(bidIv, 1);
-        askIv = this.roundDownFloat(askIv, 1);
+        //greeks    
+        JSONObject greeks = result.getJSONObject("greeks");
+        float delta = greeks.getFloat("delta");
+        float theta = greeks.getFloat("theta"); 
+        float vega  = greeks.getFloat("vega");
+
+        bid = bid * this.currentIndex;
+        ask = ask * this.currentIndex;
+
+        int intBid = (int)bid;
+        int intAsk = (int)ask;
+        bid = this.roundDownFloat(bid, 2);
+        ask = this.roundDownFloat(ask, 2);
+        delta = this.roundDownFloat(delta, 2);
+        theta = this.roundDownFloat(theta, 1);
+        vega = this.roundDownFloat(vega, 2);
         openInterest = this.roundDownFloat(openInterest, 1);
+        markIv = this.roundDownFloat(markIv, 1);
         
         String[] splitedTickerName = tickerName.split("-", 0);
         float strike = Float.parseFloat(splitedTickerName[2]);
@@ -240,29 +257,58 @@ public class DeribitApi {
             }
         }
         
-        String[] tickerStatus = new String[8];
+        String[] tickerStatus = new String[10];
         if(splitedTickerName[3].equals("C")){
             tickerStatus[0] = String.valueOf(currentOpStat);
-            tickerStatus[7] = String.valueOf(openInterest);
-            if(tickerStatus[7].equals("0.0")){
-                tickerStatus[7] = "---";
+            tickerStatus[1] = String.valueOf(delta);
+            tickerStatus[2] = String.valueOf(theta);
+            tickerStatus[3] = String.valueOf(vega);
+            tickerStatus[4] = String.valueOf(bidSize);
+            
+            tickerStatus[5] = String.valueOf(bid);
+            if(tickerStatus[5].length() >= 7){
+                tickerStatus[5] = String.valueOf(intBid);
+            }
+
+            tickerStatus[6] = String.valueOf(ask);
+            if(tickerStatus[6].length() >= 7){
+                tickerStatus[6] = String.valueOf(intAsk);
+            }
+
+            tickerStatus[7] = String.valueOf(askSize);
+            tickerStatus[8] = String.valueOf(markIv) + "%";
+            tickerStatus[9] = String.valueOf(openInterest);
+            if(tickerStatus[9].equals("0.0")){
+                tickerStatus[9] = "---";
             }
         }else if(splitedTickerName[3].equals("P")){
             tickerStatus[0] = String.valueOf(openInterest);
-            tickerStatus[7] = String.valueOf(currentOpStat);
+            tickerStatus[1] = String.valueOf(markIv) + "%";
+            tickerStatus[2] = String.valueOf(bidSize);
+            
+            tickerStatus[3] = String.valueOf(bid);
+            if(tickerStatus[3].length() >= 7){
+                tickerStatus[3] = String.valueOf(intBid);
+            }
+
+            tickerStatus[4] = String.valueOf(ask);
+            if(tickerStatus[4].length() >= 7){
+                tickerStatus[4] = String.valueOf(intAsk);
+            }
+
+            tickerStatus[5] = String.valueOf(askSize);
+            tickerStatus[6] = String.valueOf(delta);
+            tickerStatus[7] = String.valueOf(theta);
+            tickerStatus[8] = String.valueOf(vega);
+            tickerStatus[9] = String.valueOf(currentOpStat);
             if(tickerStatus[0].equals("0.0")){
                 tickerStatus[0] = "---";
             }
         }
-        tickerStatus[1] = String.valueOf(bidIv) + "%";
-        tickerStatus[2] = String.valueOf(bidSize);
-        tickerStatus[3] = String.valueOf(bid);
-        tickerStatus[4] = String.valueOf(ask);
-        tickerStatus[5] = String.valueOf(askSize);
-        tickerStatus[6] = String.valueOf(askIv) + "%";
 
-        for(int i = 1; i <= 6; i++){
-            if(tickerStatus[i].equals("0.0") || tickerStatus[i].equals("0.0%")){
+
+        for(int i = 1; i <= 8; i++){
+            if(tickerStatus[i].equals("0") || tickerStatus[i].equals("0.0") || tickerStatus[i].equals("0.0%")){
                 tickerStatus[i] = "---";
             }
         }

@@ -50,15 +50,15 @@ public class CommandExecuter{
             String[] boardLines = api.getOpBoard(api.getCurrentAsset() + "-" + selectedContractMonth);
 
             this.showDividingLine();
-            System.out.println("\t\t\t\t\tCALL\t\t\t\t\t\t\t\tPUT\t\t\t\t\t");
-            System.out.print("stat" + "\t" + "bidIV" + "\t" + "size" + "\t" + "bid" + "\t" + "ask" + "\t" + "size" + "\t" + "askIV" + "\t" + "OI");
+            System.out.println("\t\t\t\tCALL\t\t\t\t\t\t\t\t\t\t\t\t\t\tPUT\t\t\t\t\t");
+            System.out.print("stat" + "\t" + "delta" + "\t" + "theta" + "\t" + "vega" + "\t" + "size" + "\t" + "bid($)" + "\t" + "ask($)" + "\t" + "size" + "\t" + "markIV" + "\t" + "OI");
             System.out.print("\t\t" + "strike" + "\t\t"); 
-            System.out.print("OI" + "\t" + "bidIV" + "\t" + "size" + "\t" + "bid" + "\t" + "ask" + "\t" + "size" + "\t" + "askIV" + "\t" + "stat");
+            System.out.print("OI" + "\t" + "markIV" + "\t" + "size" + "\t" + "bid($)" + "\t" + "ask($)" + "\t" + "size" + "\t" + "delta" + "\t" + "theta" + "\t" + "vega" + "\t" + "stat");
             System.out.println();
             this.showDividingLine();
             for(int i = 0; i < boardLines.length; i++){
                 System.out.println(boardLines[i]);
-                //this.showDividingLine();
+                this.showDividingLine();
             }
         }
 
@@ -70,7 +70,7 @@ public class CommandExecuter{
     }
     
     private void showDividingLine(){
-        System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
     }
 
 
