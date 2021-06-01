@@ -1,10 +1,9 @@
 # deribitOPviewerOnCLI
 
 This program using Json in java
-
 notice: getBoard function is very slow, because of the api limitation.
-
 sometimes it takes 40 seconds or more.
+this program runs on only windows.
 
 -------------------------license of JSON-------------------------------
 
