@@ -3,7 +3,7 @@
 This program using Json in java.  
 notice: getBoard function is very slow, because of the api limitation.  
 sometimes it takes 40 seconds or more.  
-this program runs on only windows.
+this program runs on only windows(using cmd).  
 
 -------------------------license of JSON-------------------------------
 
