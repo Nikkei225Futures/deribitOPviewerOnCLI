@@ -57,23 +57,27 @@ public class DeribitApi {
 
     public String[] getOrderBooks(String instrumentName){
         int depth = 5;
-        String endPoint = "/public/get_order_book?depth=5&";
+        String endPoint = "/public/get_order_book?depth=5&instrument_name=";
         endPoint += instrumentName;
-        JSONOBject wholeData = this.getAPIResult(endPoint);
-        JSONOArray bids = wholeData.getJSONArray("bids");
-        JSONOArray asks = wholeData.getJSONArray("asks");
-        String[] bids = new String[depth-1];
-        String[] asks = new String[depth-1];
-        String[] results = new String[depth-1];
+        JSONObject wholeData = this.getAPIResult(endPoint);
+        System.out.println(wholeData);
+
+        JSONObject rData = wholeData.getJSONObject("result");
+
+        JSONArray bids = rData.getJSONArray("bids");
+        JSONArray asks = rData.getJSONArray("asks");
+        String[] bidsString = new String[depth];
+        String[] asksString = new String[depth];
+        String[] results = new String[depth];
 
         for(int i = 0; i < depth; i++){
-            bids[i] = bids.getJSONObject(i).toString();
-            asks[i] = asks.getJSONObject(i).toString();
+            bidsString[i] = bids.getJSONArray(i).toString();
+            asksString[i] = asks.getJSONArray(i).toString();
         }
 
 
         for(int i = 0; i < depth; i++){
-            results[i] = bids[i] + "\t" + asks[i];
+            results[i] = bidsString[i] + "\t" + asksString[i];
         }
 
         return results;
@@ -172,7 +176,7 @@ public class DeribitApi {
     private JSONObject getAPIResult(String endPoint){
         String url = this.entryPoint + endPoint;
         String command = "cmd.exe /c curl -X GET " + "\"" + url + "\"";
-        //System.out.println(url);
+        System.out.println(url);
         String rawText = cmd.connectStrArr(cmd.exeCmd(command));
         JSONObject wholeData = new JSONObject(rawText);
         return wholeData;
