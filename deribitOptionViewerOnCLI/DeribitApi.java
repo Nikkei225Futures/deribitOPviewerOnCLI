@@ -54,6 +54,31 @@ public class DeribitApi {
         this.currentIndex = indexPrice;
         return indexPrice;
     }
+
+    public String[] getOrderBooks(String instrumentName){
+        int depth = 5;
+        String endPoint = "/public/get_order_book?depth=5&";
+        endPoint += instrumentName;
+        JSONOBject wholeData = this.getAPIResult(endPoint);
+        JSONOArray bids = wholeData.getJSONArray("bids");
+        JSONOArray asks = wholeData.getJSONArray("asks");
+        String[] bids = new String[depth-1];
+        String[] asks = new String[depth-1];
+        String[] results = new String[depth-1];
+
+        for(int i = 0; i < depth; i++){
+            bids[i] = bids.getJSONObject(i).toString();
+            asks[i] = asks.getJSONObject(i).toString();
+        }
+
+
+        for(int i = 0; i < depth; i++){
+            results[i] = bids[i] + "\t" + asks[i];
+        }
+
+        return results;
+
+    }
     
     //全てのオプションの限月を表示
     public String[] getAvailableContractMonth(){
