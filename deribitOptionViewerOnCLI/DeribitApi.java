@@ -56,26 +56,33 @@ public class DeribitApi {
     }
 
     public String[] getOrderBooks(String instrumentName){
-        int depth = 5;
-        String endPoint = "/public/get_order_book?depth=5&instrument_name=";
-        endPoint += instrumentName;
+        int depth = 10;
+        String endPoint = "/public/get_order_book?depth=" + depth + "&instrument_name=" + instrumentName;
         JSONObject wholeData = this.getAPIResult(endPoint);
-        System.out.println(wholeData);
+        
+        if(wholeData.has("error")){
+            String[] err = new String[1];
+            err[0] = "No such instrument exists";
+            return err;
+        }
 
         JSONObject rData = wholeData.getJSONObject("result");
 
-        JSONArray bids = rData.getJSONArray("bids");
-        JSONArray asks = rData.getJSONArray("asks");
+        JSONArray jsonBids = rData.getJSONArray("bids");
+        JSONArray jsonAsks = rData.getJSONArray("asks");
         String[] bidsString = new String[depth];
         String[] asksString = new String[depth];
         String[] results = new String[depth];
+        Float[] bids = new Float[depth];
+        Float[] asks = new Float[depth];
 
         for(int i = 0; i < depth; i++){
-            bidsString[i] = bids.getJSONArray(i).toString();
-            asksString[i] = asks.getJSONArray(i).toString();
+            bidsString[i] = jsonBids.getJSONArray(i).toString();
+            asksString[i] = jsonAsks.getJSONArray(i).toString();
+            
         }
 
-
+        System.out.println("bids \t\t asks");
         for(int i = 0; i < depth; i++){
             results[i] = bidsString[i] + "\t" + asksString[i];
         }

@@ -63,6 +63,7 @@ public class CommandExecuter{
         }else if(input.equals("getOrderBook")){
             String selectedInstrument = inputCommand("Instrument Name", api.getCurrentAsset() + "-");
             String[] orderBooks = api.getOrderBooks(api.getCurrentAsset() + "-" + selectedInstrument);
+
             for(int i = 0; i < orderBooks.length; i++){
                 System.out.println(orderBooks[i]);
             }
