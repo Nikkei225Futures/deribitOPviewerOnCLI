@@ -75,11 +75,20 @@ public class DeribitApi {
         String[] results = new String[depth];
         Float[] bids = new Float[depth];
         Float[] asks = new Float[depth];
+        Float[] bidsAmount = new Float[depth];
+        Float[] asksAmount = new Float[depth];
 
         for(int i = 0; i < depth; i++){
+            if(jsonBids.isNull(i)){
+                break;
+            }
             bidsString[i] = jsonBids.getJSONArray(i).toString();
-            asksString[i] = jsonAsks.getJSONArray(i).toString();
             
+            if(jsonAsks.isNull(i)){
+                break;
+            }
+            asksString[i] = jsonAsks.getJSONArray(i).toString();
+
         }
 
         System.out.println("bids \t\t asks");
@@ -186,6 +195,7 @@ public class DeribitApi {
         System.out.println(url);
         String rawText = cmd.connectStrArr(cmd.exeCmd(command));
         JSONObject wholeData = new JSONObject(rawText);
+        System.out.println(rawText);
         return wholeData;
     }
     
