@@ -5,6 +5,9 @@ notice: getBoard function is very slow, because of the api limitation.
 sometimes it takes 40 seconds or more.  
 this program runs on only windows(using cmd).  
 
+example of program execution screen  
+![dop30jul21](https://user-images.githubusercontent.com/49912335/126905195-9839f381-89c2-4191-b595-bea895fc840f.png)
+
 -------------------------license of JSON-------------------------------
 
 Copyright (c) 2002 JSON.org
